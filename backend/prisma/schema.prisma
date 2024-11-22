@@ -1,0 +1,21 @@
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://myuser:mypassword@db:5432/database"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("createdAt")
+  updatedAt DateTime @updatedAt @map("updatedAt")
+  status    Boolean  @default(true)
+  role      String   @default("user") @map("role")
+
+  @@map("users")
+}
