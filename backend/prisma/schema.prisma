@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://myuser:mypassword@db:5432/database"
+  url      = "postgresql://myuser:mypassword@localhost:5432/database"
 }
 
 generator client {
@@ -18,4 +18,18 @@ model User {
   role      String   @default("user") @map("role")
 
   @@map("users")
+}
+
+model Driver {
+  id            String   @id @default(uuid())
+  name          String
+  description   String
+  vehicle       String
+  review        Json
+  price_per_km  Float
+  min_km        Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("drivers")
 }
