@@ -3,6 +3,7 @@ import userRouter from "./routes/userRoutes";
 import dotenv from "dotenv";
 import cors from "cors";
 import authRouter from "./routes/authRoutes";
+import rideRouter from "./routes/rideRoutes";
 
 dotenv.config({ path: "../.env" });
 
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 
 app.use("/api", userRouter);
 app.use("/api", authRouter);
+app.use("/", rideRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

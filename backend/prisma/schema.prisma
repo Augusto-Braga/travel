@@ -17,6 +17,8 @@ model User {
   status    Boolean  @default(true)
   role      String   @default("user") @map("role")
 
+  Trip Trip[]
+
   @@map("users")
 }
 
@@ -31,5 +33,25 @@ model Driver {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  Trip     Trip[]
+
   @@map("drivers")
+}
+
+model Trip {
+  id           String   @id @default(uuid())
+  customer_id  String
+  origin       String
+  destination  String
+  distance     Float
+  duration     String
+  driver_id    String
+  value        Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  customer     User     @relation(fields: [customer_id], references: [id])
+  driver       Driver   @relation(fields: [driver_id], references: [id])
+
+  @@map("trip")
 }
