@@ -6,6 +6,35 @@ export const rideEstimate = async (req: Request, res: Response) => {
   const { customer_id, origin, destination } = req.body;
 
   try {
+    if (!customer_id) {
+      return res.status(400).json({
+        error_code: "INVALID_DATA",
+        error_description: "id do usuário não pode estar em branco!",
+      });
+    }
+
+    if (!origin) {
+      return res.status(400).json({
+        error_code: "INVALID_DATA",
+        error_description: "Endereço de saída está em branco!",
+      });
+    }
+
+    if (!destination) {
+      return res.status(400).json({
+        error_code: "INVALID_DATA",
+        error_description: "Endereço de destino está em branco!",
+      });
+    }
+
+    if (destination === origin) {
+      return res.status(400).json({
+        error_code: "INVALID_DATA",
+        error_description:
+          "Os endereços de origem e destino não podem ser os mesmos!",
+      });
+    }
+
     const apiResponse = await axios.post(
       "https://routes.googleapis.com/directions/v2:computeRoutes",
       {
@@ -27,7 +56,16 @@ export const rideEstimate = async (req: Request, res: Response) => {
       }
     );
 
-    const driversResponse = await prisma.driver.findMany();
+    const drivers = await prisma.driver.findMany({
+      orderBy: { price_per_km: "asc" },
+    });
+
+    const distanceKm = apiResponse.data.routes[0].distanceMeters / 1000;
+
+    const driversResponse = drivers.map((driver) => ({
+      ...driver,
+      value: parseFloat((driver.price_per_km * distanceKm).toFixed(2)),
+    }));
 
     const response = {
       origin: {
@@ -49,6 +87,146 @@ export const rideEstimate = async (req: Request, res: Response) => {
     };
 
     res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const rideConfirm = async (req: Request, res: Response) => {
+  const {
+    customer_id,
+    origin,
+    destination,
+    distance,
+    duration,
+    driver_id,
+    value,
+  } = req.body;
+
+  try {
+    if (!customer_id) {
+      return res.status(400).json({
+        error_code: "INVALID_DATA",
+        error_description: "id do usuário não pode estar em branco!",
+      });
+    }
+
+    if (!origin) {
+      return res.status(400).json({
+        error_code: "INVALID_DATA",
+        error_description: "Endereço de saída está em branco!",
+      });
+    }
+
+    if (!destination) {
+      return res.status(400).json({
+        error_code: "INVALID_DATA",
+        error_description: "Endereço de destino está em branco!",
+      });
+    }
+
+    if (destination === origin) {
+      return res.status(400).json({
+        error_code: "INVALID_DATA",
+        error_description:
+          "Os endereços de origem e destino não podem ser os mesmos!",
+      });
+    }
+
+    const driver = await prisma.driver.findUnique({
+      where: { id: driver_id as string },
+    });
+
+    if (!driver) {
+      return res.status(400).json({
+        error_code: "INVALID_DRIVER",
+        error_description: "id do motorista inválido",
+      });
+    }
+
+    if (driver.min_km > distance) {
+      return res.status(400).json({
+        error_code: "INVALID_DISTANCE",
+        error_description:
+          "Distância mínima do motorista é incompatível com essa viagem",
+      });
+    }
+    const newTrip = await prisma.trip.create({
+      data: {
+        customer_id,
+        origin,
+        destination,
+        distance,
+        duration,
+        driver_id,
+        value,
+      },
+    });
+
+    res.status(201).json({ success: true });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const listRides = async (req: Request, res: Response) => {
+  const { customer_id, driver_id } = req.query;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: customer_id as string },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        error_code: "INVALID_CUSTOMER",
+        error_description: "id do usuário inválido",
+      });
+    }
+
+    if (driver_id) {
+      const driver = await prisma.driver.findUnique({
+        where: { id: driver_id as string },
+      });
+
+      if (!driver) {
+        return res.status(400).json({
+          error_code: "INVALID_DRIVER",
+          error_description: "id do motorista inválido",
+        });
+      }
+
+      const trips = await prisma.trip.findMany({
+        where: {
+          customer_id: customer_id as string,
+          driver_id: driver_id as string,
+        },
+        include: {
+          driver: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+      return res.status(200).json(trips);
+    }
+
+    const trips = await prisma.trip.findMany({
+      where: {
+        customer_id: customer_id as string,
+      },
+      include: {
+        driver: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+    return res.status(200).json(trips);
   } catch (error) {
     console.error(error);
   }
