@@ -44,7 +44,10 @@ Além disso, as **portas** a seguir devem estar **livres** no seu sistema:
 4. **Rodando o projeto**
 
    Depois de criar o arquivo .env, inicie o ambiente de desenvolvimento com o comando:
+
+   ```bash
    docker-compose up --build
+   ```
 
    Esse comando irá construir as imagens dos containers e iniciar o backend, frontend, nginx e o banco de dados PostgreSQL.
 
