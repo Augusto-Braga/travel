@@ -51,7 +51,7 @@ export const rideEstimate = async (req: Request, res: Response) => {
           "Content-Type": "application/json",
           "X-Goog-Api-Key": process.env.GOOGLE_API_KEY,
           "X-Goog-FieldMask":
-            "routes.duration,routes.distanceMeters,routes.legs.endLocation,routes.legs.startLocation",
+            "routes.duration,routes.distanceMeters,routes.legs.endLocation,routes.legs.startLocation,routes.polyline.encodedPolyline",
         },
       }
     );
@@ -80,15 +80,19 @@ export const rideEstimate = async (req: Request, res: Response) => {
         longitude:
           apiResponse.data.routes[0].legs[0].endLocation.latLng.longitude,
       },
-      distance: `${apiResponse.data.routes[0].distanceMeters}m`,
+      distance: `${apiResponse.data.routes[0].distanceMeters}`,
       duration: apiResponse.data.routes[0].duration,
       options: driversResponse,
+      encodedPolyline: apiResponse.data.routes[0].polyline.encodedPolyline,
       routeResponse: apiResponse.data,
     };
 
     res.status(200).json(response);
   } catch (error) {
-    console.error(error);
+    return res.status(400).json({
+      error_code: "SERVER_ERROR",
+      error_description: "Erro do servidor",
+    });
   }
 };
 
@@ -165,7 +169,10 @@ export const rideConfirm = async (req: Request, res: Response) => {
 
     res.status(201).json({ success: true });
   } catch (error) {
-    console.error(error);
+    return res.status(400).json({
+      error_code: "SERVER_ERROR",
+      error_description: "Erro do servidor",
+    });
   }
 };
 
@@ -228,6 +235,26 @@ export const listRides = async (req: Request, res: Response) => {
     });
     return res.status(200).json(trips);
   } catch (error) {
-    console.error(error);
+    return res.status(400).json({
+      error_code: "SERVER_ERROR",
+      error_description: "Erro do servidor",
+      error,
+    });
+  }
+};
+
+export const listDrivers = async (req: Request, res: Response) => {
+  try {
+    const response = await prisma.driver.findMany({
+      orderBy: { price_per_km: "asc" },
+    });
+
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(400).json({
+      error_code: "SERVER_ERROR",
+      error_description: "Erro do servidor",
+      error,
+    });
   }
 };

@@ -67,7 +67,7 @@ const RegisterPage: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Pagina de cadastro
       </Typography>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="w-96">
         <TextField
           {...register("name", {
             required: "Nome é obrigatória!",

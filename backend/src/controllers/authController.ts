@@ -27,13 +27,13 @@ export const loginUser = async (req: Request, res: Response) => {
       { userId: user.id },
       "qB5cH06sghEz27g0aoRt7fFnL6MzefAkdrg7MaxS0BhlVZ9RDOrU9V4Cgkrz4lxqY8ForeqhgUteET0NmXZmXA==",
       {
-        expiresIn: "1h",
+        expiresIn: "5h",
       }
     );
 
     res.json({ token });
   } catch (error) {
-    res.status(500).json({ error: "Erro ao processar login" });
+    res.status(500).json({ error: "Erro ao efetuar login" });
   }
 };
 
@@ -76,6 +76,7 @@ export const getLoggedUser = async (req: Request, res: Response) => {
     }
 
     const response: Partial<IUser> = {
+      id: user.id,
       name: user.name,
       email: user.email,
     };

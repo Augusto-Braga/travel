@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useContext, useState } from "react";
 
 interface UserContextProps {
+  id: string | null;
   name: string | null;
   email: string | null;
 }
@@ -14,6 +15,7 @@ interface UserContextValue extends UserContextProps {
 }
 
 const UserContext = createContext<UserContextValue>({
+  id: null,
   name: null,
   email: null,
   fetchUser: async () => {},
@@ -21,6 +23,7 @@ const UserContext = createContext<UserContextValue>({
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserContextProps>({
+    id: null,
     name: null,
     email: null,
   });
@@ -35,7 +38,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       });
       if (response.ok) {
         const data = await response.json();
-        setUser({ name: data.name, email: data.email });
+        setUser({ id: data.id, name: data.name, email: data.email });
       }
     }
   };

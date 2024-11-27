@@ -71,7 +71,7 @@ const LoginPage: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Login page
       </Typography>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="w-96">
         <TextField
           {...register("email", {
             required: "Email é obrigatório!",
