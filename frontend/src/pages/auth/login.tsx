@@ -35,7 +35,7 @@ const LoginPage: React.FC = () => {
     password: string;
   }) => {
     try {
-      const response = await fetch("http://localhost:4000/api/login", {
+      const response = await fetch("http://localhost:8080/api/login", {
         method: "POST",
         headers: {
           "Content-type": "application/json",

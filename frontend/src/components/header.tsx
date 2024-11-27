@@ -9,19 +9,28 @@ const Header = ({
   userName: string;
   isHomepage: boolean;
 }) => {
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+  };
+
   return (
     <Box display="flex" justifyContent="space-around" padding={4}>
       <Typography variant="h5">{`Olá ${userName}!`}</Typography>
-      {isHomepage && (
-        <Link to={"/rides"}>
-          <Button>Ver minhas viagens</Button>
+      <Box display="flex">
+        {isHomepage && (
+          <Link to={"/rides"}>
+            <Button>Ver minhas viagens</Button>
+          </Link>
+        )}
+        {!isHomepage && (
+          <Link to={"/home"} onClick={handleLogout}>
+            <Button>Simular Viagem</Button>
+          </Link>
+        )}
+        <Link to={"/"}>
+          <Button color="error">Sair</Button>
         </Link>
-      )}
-      {!isHomepage && (
-        <Link to={"/home"}>
-          <Button>Simular Viagem</Button>
-        </Link>
-      )}
+      </Box>
     </Box>
   );
 };

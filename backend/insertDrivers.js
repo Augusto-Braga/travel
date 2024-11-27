@@ -1,6 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: "postgresql://myuser:mypassword@db:5432/database",
+    },
+  },
+});
+
+prisma.$connect().catch((e) => {
+  console.error("Erro ao conectar ao banco de dados:", e);
+  process.exit(1);
+});
 
 async function main() {
   await prisma.driver.createMany({

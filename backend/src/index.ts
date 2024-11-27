@@ -5,7 +5,7 @@ import cors from "cors";
 import authRouter from "./routes/authRoutes";
 import rideRouter from "./routes/rideRoutes";
 
-dotenv.config({ path: "../.env" });
+dotenv.config();
 
 const app = express();
 const PORT = 4000;
@@ -22,5 +22,5 @@ app.use("/api", authRouter);
 app.use("/", rideRouter);
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running!!`);
 });

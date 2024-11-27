@@ -44,7 +44,7 @@ const RidesPage: React.FC = () => {
       customer_id: user.id as string,
     });
     try {
-      const response = await fetch(`http://localhost:4000/ride?${params}`);
+      const response = await fetch(`http://localhost:8080/ride?${params}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -85,6 +85,9 @@ const RidesPage: React.FC = () => {
           width="70%"
           marginTop="30px"
         >
+          {rides?.length === 0 && (
+            <Typography variant="h5">Nenhuma viagem cadastrada!</Typography>
+          )}
           {rides?.map((ride: any) => (
             <Card
               key={ride.id}

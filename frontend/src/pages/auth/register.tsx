@@ -36,7 +36,7 @@ const RegisterPage: React.FC = () => {
     name: string;
   }) => {
     try {
-      const response = await fetch("http://localhost:4000/api/users", {
+      const response = await fetch("http://localhost:8080/api/users", {
         method: "POST",
         headers: {
           "Content-type": "application/json",

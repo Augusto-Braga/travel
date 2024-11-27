@@ -31,7 +31,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const fetchUser = async () => {
     const token = localStorage.getItem("token");
     if (token) {
-      const response = await fetch("http://localhost:4000/api/loggedUser", {
+      const response = await fetch("http://localhost:8080/api/loggedUser", {
         headers: {
           authorization: `Bearer ${token}`,
         },

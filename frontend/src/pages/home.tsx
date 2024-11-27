@@ -67,7 +67,7 @@ const HomePage: React.FC = () => {
   }) => {
     setServerError("");
     try {
-      const response = await fetch("http://localhost:4000/ride/estimate", {
+      const response = await fetch("http://localhost:8080/ride/estimate", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -109,8 +109,9 @@ const HomePage: React.FC = () => {
   };
 
   const confirmRide = async () => {
+    setServerError("");
     try {
-      const response = await fetch("http://localhost:4000/ride/confirm", {
+      const response = await fetch("http://localhost:8080/ride/confirm", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -128,6 +129,9 @@ const HomePage: React.FC = () => {
 
       if (response.ok) {
         navigate("/rides");
+      } else {
+        const errorData = await response.json();
+        setServerError(errorData.error_description);
       }
     } catch (error) {
       console.error("erro na requisição:", error);
@@ -136,60 +140,72 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-      <Box display="flex" flexDirection="column" minHeight="100vh" padding={0}>
-        {user.name && <Header userName={user.name} isHomepage={true} />}
+      {!user.id && (
+        <Box display="flex" alignItems="center" justifyContent="center">
+          <Typography variant="h3">Deve haver um usuário logado</Typography>
+        </Box>
+      )}
+      {user.id && (
         <Box
           display="flex"
           flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          flexGrow={1}
+          minHeight="100vh"
+          padding={0}
         >
-          <Typography variant="h4" gutterBottom>
-            Simule sua viagem
-          </Typography>
-          <form onSubmit={handleSubmit(onSubmit)} className="w-96">
-            <TextField
-              {...register("origin", {
-                required: "Endereço obrigatório!",
-              })}
-              type="text"
-              label="Origem"
-              placeholder="Rua Papa João XXIII, 361, São José dos Campos"
-              color={errors.origin ? "error" : "primary"}
-              required
-              fullWidth
-              margin="normal"
-            />
-            {errors.origin && (
-              <FormHelperText error>{errors.origin.message}</FormHelperText>
-            )}
-            <TextField
-              {...register("destination", {
-                required: "Endereço obrigatório!",
-              })}
-              type="text"
-              label="Destino"
-              placeholder="Rua Deocliciano Borges de Oliveira, 126, São José dos Campos"
-              color={errors.destination ? "error" : "primary"}
-              required
-              fullWidth
-              margin="normal"
-            />
-            {errors.destination && (
-              <FormHelperText error>
-                {errors.destination.message}
-              </FormHelperText>
-            )}
-            <Button type="submit" variant="contained" color="primary">
-              Simular
-            </Button>
-            {serverError.length > 0 && (
-              <FormHelperText error>{serverError}</FormHelperText>
-            )}
-          </form>
+          {user.name && <Header userName={user.name} isHomepage={true} />}
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            flexGrow={1}
+          >
+            <Typography variant="h4" gutterBottom>
+              Simule sua viagem
+            </Typography>
+            <form onSubmit={handleSubmit(onSubmit)} className="w-96">
+              <TextField
+                {...register("origin", {
+                  required: "Endereço obrigatório!",
+                })}
+                type="text"
+                label="Origem"
+                placeholder="Rua Papa João XXIII, 361, São José dos Campos"
+                color={errors.origin ? "error" : "primary"}
+                required
+                fullWidth
+                margin="normal"
+              />
+              {errors.origin && (
+                <FormHelperText error>{errors.origin.message}</FormHelperText>
+              )}
+              <TextField
+                {...register("destination", {
+                  required: "Endereço obrigatório!",
+                })}
+                type="text"
+                label="Destino"
+                placeholder="Rua Deocliciano Borges de Oliveira, 126, São José dos Campos"
+                color={errors.destination ? "error" : "primary"}
+                required
+                fullWidth
+                margin="normal"
+              />
+              {errors.destination && (
+                <FormHelperText error>
+                  {errors.destination.message}
+                </FormHelperText>
+              )}
+              <Button type="submit" variant="contained" color="primary">
+                Simular
+              </Button>
+              {serverError.length > 0 && (
+                <FormHelperText error>{serverError}</FormHelperText>
+              )}
+            </form>
+          </Box>
         </Box>
-      </Box>
+      )}
       <Dialog
         open={ismodalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -292,6 +308,9 @@ const HomePage: React.FC = () => {
           >
             Confirmar
           </Button>
+          {serverError.length > 0 && (
+            <FormHelperText error>{serverError}</FormHelperText>
+          )}
         </DialogContent>
       </Dialog>
     </>

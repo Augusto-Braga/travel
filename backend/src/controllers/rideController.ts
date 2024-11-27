@@ -92,6 +92,7 @@ export const rideEstimate = async (req: Request, res: Response) => {
     return res.status(400).json({
       error_code: "SERVER_ERROR",
       error_description: "Erro do servidor",
+      error,
     });
   }
 };
@@ -172,6 +173,7 @@ export const rideConfirm = async (req: Request, res: Response) => {
     return res.status(400).json({
       error_code: "SERVER_ERROR",
       error_description: "Erro do servidor",
+      error,
     });
   }
 };
